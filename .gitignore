@@ -1,0 +1,11 @@
+design/
+build/*
+cmake/*
+vgcore*
+junk/
+nohup*
+js_bak/*
+*.log
+*.pid
+*.service
+
