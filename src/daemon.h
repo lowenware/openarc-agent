@@ -7,8 +7,13 @@
 /* return values ------------------------------------------------------------ */
 
 
-#define DAEMON_FLAG_TERMINATE 1
-#define DAEMON_FLAG_RELOAD    2
+#define DAEMON_FLAG_TERMINATE      (1 << 0)
+#define DAEMON_FLAG_RELOAD         (1 << 1)
+#define DAEMON_FLAG_DATABASE_READY (1 << 2)
+#define DAEMON_FLAG_DATABASE_ERROR (1 << 3)
+#define DAEMON_FLAG_LOAD_CHANNELS  (1 << 4)
+#define DAEMON_FLAG_WAIT_CHANNELS  (1 << 5)
+
 
 /* -------------------------------------------------------------------------- */
 

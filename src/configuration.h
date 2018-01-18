@@ -1,6 +1,8 @@
 #ifndef _AGENT_CONFIGURATION_H_
 #define _AGENT_CONFIGURATION_H_
 
+#include "status.h"
+
 /* -------------------------------------------------------------------------- */
 
 struct configuration
@@ -13,11 +15,12 @@ struct configuration
   int          listenPort;
   const char * logLevel;
   const char * logFile;
-  const char * dbName;
-  const char * dbUser;
-  const char * dbPass;
-  const char * dbHost;
+  const char * dbDatabase;
+  const char * dbUsername;
+  const char * dbPassword;
+  const char * dbHostname;
   int          dbPort;
+  int          dbConnections;
 };
 
 typedef struct configuration * configuration_t;

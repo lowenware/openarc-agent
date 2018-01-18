@@ -11,7 +11,7 @@ int
 main(int argc, char ** argv)
 {
   /* localization */
-  bindtextdomain (APPLICATION, LOCALES_DESTINATION);
+  bindtextdomain (APPLICATION, LOCALE_PATH);
   bind_textdomain_codeset (APPLICATION, "UTF-8");
   textdomain (APPLICATION);
 

@@ -67,7 +67,7 @@ const char argCfgFile[]    = "--config-file=",
 
 /* -------------------------------------------------------------------------- */
 
-const char defCfgFile[] = CFG_FILE;
+const char defCfgFile[] = CONFIG_PATH;
 
 /* -------------------------------------------------------------------------- */
 
@@ -202,7 +202,7 @@ daemon_start(int go_bg, daemon_loop_t loop_run )
   }
 
   /* check user */
-  if ( *cfg->systemUser )
+  if ( uid == 0 && *cfg->systemUser )
   {
     errno = 0;
     if ( (pw = getpwnam( cfg->systemUser )) == NULL )
@@ -354,7 +354,10 @@ daemon_start(int go_bg, daemon_loop_t loop_run )
 static int
 daemon_kill( int signum )
 {
-  configuration_set_defaults();
+  status_t result;
+
+  if ( (result=configuration_init()) != STATUS_SUCCESS )
+    return result;
 
   if (configuration_load_from_file( gCfgFile ) != 0)
   {

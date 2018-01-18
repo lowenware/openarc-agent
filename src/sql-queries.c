@@ -1,11 +1,7 @@
-#ifndef _AGENT_LOOP_H_
-#define _AGENT_LOOP_H_
+#include "sql-queries.h"
 
 /* -------------------------------------------------------------------------- */
 
-int
-loop_run( int * flags );
+const char sqlSelectChannels[] = SQL_SELECT_CHANNELS;
 
 /* -------------------------------------------------------------------------- */
-
-#endif

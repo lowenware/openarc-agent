@@ -29,6 +29,14 @@ set ( SOURCE_FILES
   src/daemon.c
   src/configuration.c
   src/loop.c
+  src/module.c
+  src/channel.c
+  src/sql-queries.c
+  src/commands-pool.c
+  src/common-utils.c
+  src/store-heartbeat.c
+  src/store-contact-id.c
+  src/store-location.c
 
 
   cStuff/dbx.c
@@ -37,6 +45,10 @@ set ( SOURCE_FILES
   cStuff/datetime.c
   cStuff/fs-utils.c
   cStuff/sock-utils.c
+  cStuff/str-utils.c
+  cStuff/list.c
+  cStuff/uri.c
+  cStuff/query-stream.c
 )
 
 # definitions -----------------------------------------------------------------
@@ -50,14 +62,18 @@ add_definitions(
 
   -DCSTUFF_STR_UTILS_WITH_NCOPY
   -DCSTUFF_STR_UTILS_WITH_COPY
+  -DCSTUFF_STR_UTILS_WITH_CMPI
   -DCSTUFF_STR_UTILS_WITH_PRINTF
 
   -DCSTUFF_LIST_WITH_APPEND
   -DCSTUFF_LIST_WITH_INSERT
   -DCSTUFF_LIST_WITH_REMOVE_INDEX
+  -DCSTUFF_LIST_WITH_REMOVE
 
   -DCSTUFF_LOG_WITH_STDLOG
   -DCSTUFF_FS_WITH_MAKE_FILE_PATH
+  -DCSTUFF_URI_WITH_PARSE
+  -DCSTUFF_QUERY_STREAM_WITH_CONSTRUCTOR
 
 )
 
@@ -68,6 +84,7 @@ find_package(PostgreSQL)
 
 include_directories(
   "./"
+  "./include/"
   ${PostgreSQL_INCLUDE_DIRS}
   ${OPENSSL_INCLUDE_DIRS}
 )
@@ -83,6 +100,7 @@ add_executable( ${APPLICATION} ${SOURCE_FILES} )
 
 target_link_libraries (
   ${APPLICATION}
+  dl
   ${PostgreSQL_LIBRARIES}
   ${OPENSSL_LIBRARIES}
 )
@@ -173,6 +191,7 @@ set(SYSTEMD_DESTINATION  "${CMAKE_INSTALL_PREFIX}/lib/systemd/system" )
 set(BINARIES_DESTINATION "${CMAKE_INSTALL_PREFIX}/sbin" )
 set(SHARES_DESTINATION   "${SHARE_INSTALL_PREFIX}/${PROJECT_NAME}" )
 set(LOCALE_DESTINATION   "${SHARE_INSTALL_PREFIX}/locale" )
+set(MODULES_DESTINATION  "${LIB_INSTALL_DIR}/${PROJECT_NAME}/modules" )
 
 if( CMAKE_DEBUG )
 
@@ -185,8 +204,8 @@ if( CMAKE_DEBUG )
   set(CONFIG_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${CONFIG_FILE}")
   set(BINARY_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${BUILD_DIRECTORY}/${APPLICATION}")
   set(LOCALE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/locale")
+  set(MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}/${BUILD_DERECTORY}")
 
-  set(TEMPLATES_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/templates/")
   set(APPLICATION_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/")
 
 else()
@@ -195,11 +214,12 @@ else()
 
   set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${RELEASE_CFLAGS}")
 
-  set(PID_PATH    "${SYSVAR_INSTALL_DIR}/run/${PROJECT_NAME}/${PID_FILE}")
-  set(LOG_PATH    "${SYSVAR_INSTALL_DIR}/log/${PROJECT_NAME}/${LOG_FILE}")
-  set(CONFIG_PATH "${CONFIG_DESTINATION}/${CONFIG_FILE}")
-  set(BINARY_PATH "${BINARIES_DESTINATION}/${APPLICATION}")
-  set(LOCALE_PATH "${LOCALE_DESTINATION}/locale")
+  set(PID_PATH     "${SYSVAR_INSTALL_DIR}/run/${PROJECT_NAME}/${PID_FILE}")
+  set(LOG_PATH     "${SYSVAR_INSTALL_DIR}/log/${PROJECT_NAME}/${LOG_FILE}")
+  set(CONFIG_PATH  "${CONFIG_DESTINATION}/${CONFIG_FILE}")
+  set(BINARY_PATH  "${BINARIES_DESTINATION}/${APPLICATION}")
+  set(LOCALE_PATH  "${LOCALE_DESTINATION}/locale")
+  set(MODULES_PATH "${MODULES_DESTINATION}" )
 
   set(APPLICATION_ROOT "${CMAKE_INSTALL_PREFIX}/")
 endif()
@@ -209,6 +229,8 @@ add_definitions(
   -DPID_PATH="${PID_PATH}"
   -DCONFIG_PATH="${CONFIG_PATH}"
   -DBINARY_PATH="${BINARY_PATH}"
+  -DLOCALE_PATH="${LOCALE_PATH}"
+  -DMODULES_PATH="${MODULES_PATH}"
   -DAPPLICATION_ROOT="${CMAKE_INSTALL_PREFIX}"
 )
 

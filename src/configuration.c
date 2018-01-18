@@ -11,40 +11,40 @@
 /* -------------------------------------------------------------------------- */
 
 #define CFG_STRING( name, key, default ) \
-  static const char * cfgKey_ ## name = key; \
-  static const char * cfgDef_ ## name = default;
+  static const char * cfgKey_##name = key; \
+  static const char * cfgDef_##name = default;
 
 /* -------------------------------------------------------------------------- */
 
 #define CFG_INTEGER( name, key, default ) \
-  static const char * cfgKey_ ## name = key; \
-  static const int    cfgDef_ ## name = default;
+  static const char * cfgKey_##name = key; \
+  static const int    cfgDef_##name = default;
 
 /* -------------------------------------------------------------------------- */
 
-#define CFG_IS_DEFAULT( name ) ( cfg-> ## name == cfgDef_ ## name )
+#define CFG_IS_DEFAULT( name ) ( cfg->name == cfgDef_##name )
 
 /* -------------------------------------------------------------------------- */
 
-#define CFG_SET_DEFAULT( name ) ( cfg-> ## name = cfgDef_ ## name )
+#define CFG_SET_DEFAULT( name ) ( cfg->name = cfgDef_##name )
 
 /* -------------------------------------------------------------------------- */
 
 #define CFG_FREE( name ) \
-  if ( cfg->##name ) { \
+  if ( cfg->name ) { \
     if ( ! CFG_IS_DEFAULT( name ) ) \
-      free( (void *) cfg-> ## name ); \
-    cfg-> ## name = NULL; \
+      free( (void *) cfg->name ); \
+    cfg->name = NULL; \
   }
 
 /* -------------------------------------------------------------------------- */
 
-#define CFG_LOG( name ) cfgKey_ ## name , cfg-> ## name
+#define CFG_LOG( name ) cfgKey_##name , cfg->name
 
 /* -------------------------------------------------------------------------- */
 
 #define CFG_SET_STRING( name, value, value_len) \
-  configuration_set_string( (char **) &cfg->##name, \
+  configuration_set_string( (const char **) &cfg->name, \
                             cfgKey_##name, \
                             cfgDef_##name,\
                             value,\
@@ -53,7 +53,7 @@
 /* -------------------------------------------------------------------------- */
 
 #define CFG_SET_INTEGER( name, value ) \
-  configuration_set_integer( (int*) &cfg->##name, \
+  configuration_set_integer( (int*) &cfg->name, \
                              cfgKey_##name, \
                              cfgDef_##name,\
                              value )\
@@ -66,26 +66,25 @@
 
 CFG_STRING(  instance,       "agent.instance",         "default"    )
 CFG_STRING(  modulesRoot,    "agent.modulesRoot",      MODULES_PATH )
-CFG_STRING(  systemUser,     "agent.systemUser"        PROJECT_NAME )
+CFG_STRING(  systemUser,     "agent.systemUser",       PROJECT_NAME )
 CFG_STRING(  pidFile,        "agent.pidFile",          PID_PATH     )
 CFG_STRING(  listenHost,     "agent.listen.host",      "0.0.0.0"    )
-CFG_INTEGER( listenPort,     "agent.listen.port",      6588, int    )
+CFG_INTEGER( listenPort,     "agent.listen.port",      6588         )
 CFG_STRING(  logLevel,       "agent.log.level",        "all"        )
 CFG_STRING(  logFile,        "agent.log.file",         LOG_PATH     )
-CFG_STRING(  dbName,         "database.name",          PROJECT_NAME )
-CFG_STRING(  dbUser,         "database.user",          PROJECT_NAME )
-CFG_STRING(  dbPass,         "database.pass",          ""           )
-CFG_STRING(  dbHost,         "database.host",          "localhost"  )
-CFG_INTEGER( dbPort,         "database.port",          5432, int    )
-
+CFG_STRING(  dbDatabase,     "database.name",          PROJECT_NAME )
+CFG_STRING(  dbUsername,     "database.username",      PROJECT_NAME )
+CFG_STRING(  dbPassword,     "database.password",      ""           )
+CFG_STRING(  dbHostname,     "database.hostname",      "localhost"  )
+CFG_INTEGER( dbPort,         "database.port",          5432         )
+CFG_INTEGER( dbConnections,  "database.connections",   4            )
+  
 /* -------------------------------------------------------------------------- */
 
 static const char errCfgFailure[]="configuration failed (%s)\n",
                   errBadCfgUnit[]="unknown configuration %s '%s' on line %d\n",
                   errMallocFail[]="failed to allocate %dB for parameter %s\n",
-                  errCfgSyntax[]="configuration syntax error on line %d:\n%s\n",
-                  cfgLogString[]="%s=%s\n",
-                  cfgLogInteger[]="%s=%d\n";
+                  errCfgSyntax[]="configuration syntax error on line %d:\n%s\n";
 
 /* -------------------------------------------------------------------------- */
 
@@ -95,9 +94,9 @@ configuration_t cfg = NULL;
 
 
 status_t
-configuration_set_defaults()
+configuration_init()
 {
-  if ( !(cfg = callog(1, sizeof(struct configuration))) )
+  if ( !(cfg = calloc(1, sizeof(struct configuration))) )
     return STATUS_MALLOC_ERROR;
 
   CFG_SET_DEFAULT( instance );
@@ -108,11 +107,12 @@ configuration_set_defaults()
   CFG_SET_DEFAULT( listenPort );
   CFG_SET_DEFAULT( logFile );
   CFG_SET_DEFAULT( logLevel );
-  CFG_SET_DEFAULT( dbName );
-  CFG_SET_DEFAULT( dbUser );
-  CFG_SET_DEFAULT( dbPass );
-  CFG_SET_DEFAULT( dbHost );
+  CFG_SET_DEFAULT( dbDatabase );
+  CFG_SET_DEFAULT( dbUsername );
+  CFG_SET_DEFAULT( dbPassword );
+  CFG_SET_DEFAULT( dbHostname );
   CFG_SET_DEFAULT( dbPort );
+  CFG_SET_DEFAULT( dbConnections );
 
   return STATUS_SUCCESS;
 }
@@ -130,11 +130,12 @@ configuration_release()
   /* CFG_FREE( listenPort  ); */
   CFG_FREE( logFile     );
   CFG_FREE( logLevel    );
-  CFG_FREE( dbName      );
-  CFG_FREE( dbUser      );
-  CFG_FREE( dbPass      );
-  CFG_FREE( dbHost      );
+  CFG_FREE( dbDatabase      );
+  CFG_FREE( dbUsername      );
+  CFG_FREE( dbPassword      );
+  CFG_FREE( dbHostname      );
   /* CFG_FREE( dbPort     ); */
+  /* CFG_FREE( dbConnections ); */
 
   free(cfg);
   cfg = NULL;
@@ -145,7 +146,7 @@ configuration_release()
 void
 configuration_log()
 {
-  int l = strlen( cfg->dbPass );
+  int l = strlen( cfg->dbPassword );
   char pass[8];
 
   if(l)
@@ -169,6 +170,7 @@ configuration_log()
     "  %s = %s\n"
     "  %s = %s\n"
     "  %s = %s\n"
+    "  %s = %d\n"
     "  %s = %d\n",
     CFG_LOG( instance ),
     CFG_LOG( modulesRoot ),
@@ -178,11 +180,12 @@ configuration_log()
     CFG_LOG( listenPort ),
     CFG_LOG( logFile ),
     CFG_LOG( logLevel ),
-    CFG_LOG( dbName ),
-    CFG_LOG( dbUser ),
-    cfgKey_dbPass, pass,
-    CFG_LOG( dbHost ),
-    CFG_LOG( dbPort )
+    CFG_LOG( dbDatabase ),
+    CFG_LOG( dbUsername ),
+    cfgKey_dbPassword, pass,
+    CFG_LOG( dbHostname ),
+    CFG_LOG( dbPort ),
+    CFG_LOG( dbConnections )
   );
 
 }
@@ -193,7 +196,7 @@ configuration_log()
 static bool
 configuration_set_string( const char ** param,
                           const char *  key,
-                          const char *  d_value
+                          const char *  d_value,
                           const char *  value,
                           int           v_len )
 {
@@ -211,7 +214,7 @@ configuration_set_string( const char ** param,
   }
 
   /* set values equal to default by pointer without allocation */
-  if (strmcp(value, d_value) == 0)
+  if (strcmp(value, d_value) == 0)
   {
     *param = d_value;
     return true;
@@ -231,10 +234,10 @@ configuration_set_string( const char ** param,
 static bool
 configuration_set_integer( int        * param,
                            const char * key,
-                           const int    d_value
+                           const int    d_value,
                            const char * value )
 {
-  const char * stop = NULL;
+  char * stop = NULL;
 
   *param = strtol( value, &stop, 10 );
   if ( stop && stop != value )
@@ -274,44 +277,47 @@ on_get_pair( int              line_number,
              int              v_len,
              void           * u_ptr )
 {
-  if (CFG_KEY_MATCH( instance ))
+  if (CFG_KEY_MATCH( instance, key ))
     return CFG_SET_STRING( instance, value, v_len);
 
-  if (CFG_KEY_MATCH( modulesRoot )
+  if (CFG_KEY_MATCH( modulesRoot, key  ))
     return CFG_SET_STRING( modulesRoot, value, v_len);
 
-  if (CFG_KEY_MATCH( systemUser )
+  if (CFG_KEY_MATCH( systemUser, key  ))
     return CFG_SET_STRING( systemUser, value, v_len);
 
-  if (CFG_KEY_MATCH( pidFile )
+  if (CFG_KEY_MATCH( pidFile, key  ))
     return CFG_SET_STRING( pidFile, value, v_len);
 
-  if (CFG_KEY_MATCH( listenHost )
+  if (CFG_KEY_MATCH( listenHost, key  ))
     return CFG_SET_STRING( listenHost, value, v_len);
 
-  if (CFG_KEY_MATCH( listenPort )
-    return CFG_SET_INTEGER( listenPort, value, v_len);
+  if (CFG_KEY_MATCH( listenPort, key  ))
+    return CFG_SET_INTEGER( listenPort, value);
 
-  if (CFG_KEY_MATCH( logFile )
+  if (CFG_KEY_MATCH( logFile, key  ))
     return CFG_SET_STRING( logFile, value, v_len);
 
-  if (CFG_KEY_MATCH( logLevel )
+  if (CFG_KEY_MATCH( logLevel, key  ))
     return CFG_SET_STRING( logLevel, value, v_len);
 
-  if (CFG_KEY_MATCH( dbName )
-    return CFG_SET_STRING( dbName, value, v_len);
+  if (CFG_KEY_MATCH( dbDatabase, key  ))
+    return CFG_SET_STRING( dbDatabase, value, v_len);
 
-  if (CFG_KEY_MATCH( dbUser )
-    return CFG_SET_STRING( dbUser, value, v_len);
+  if (CFG_KEY_MATCH( dbUsername, key  ))
+    return CFG_SET_STRING( dbUsername, value, v_len);
 
-  if (CFG_KEY_MATCH( dbPass )
-    return CFG_SET_STRING( dbPass, value, v_len);
+  if (CFG_KEY_MATCH( dbPassword, key  ))
+    return CFG_SET_STRING( dbPassword, value, v_len);
 
-  if (CFG_KEY_MATCH( dbHost )
-    return CFG_SET_STRING( dbHost, value, v_len);
+  if (CFG_KEY_MATCH( dbHostname, key  ))
+    return CFG_SET_STRING( dbHostname, value, v_len);
 
-  if (CFG_KEY_MATCH( dbPort )
-    return CFG_SET_INTEGER( dbPort, value, v_len);
+  if (CFG_KEY_MATCH( dbPort, key  ))
+    return CFG_SET_INTEGER( dbPort, value);
+
+  if (CFG_KEY_MATCH( dbConnections, key  ))
+    return CFG_SET_INTEGER( dbConnections, value);
 
   fprintf(stderr, errBadCfgUnit, "pair", key, line_number);
 
@@ -351,21 +357,7 @@ configuration_load_from_file( const char * file )
     return status;
   }
 
-  /*
-  dbxUri = str_printf(
-             "postgres://%s:%s@%s:%d/%s", cfgDbUser,
-                                          cfgDbPass,
-                                          cfgDbHost,
-                                          cfgDbPort,
-                                          cfgDbName
-           );
 
-  if (!dbxUri)
-  {
-    fprintf( stderr, errCfgFailure, "malloc error" );
-    return status;
-  }
-  */
 
   return 0;
 }

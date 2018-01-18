@@ -1,5 +1,5 @@
-#ifndef __STATUS_H_
-#define __STATUS_H_
+#ifndef _AGENT_STATUS_H_
+#define _AGENT_STATUS_H_
 
 #include <cStuff/retcodes.h>
 
@@ -8,11 +8,9 @@
 typedef enum
 {
   /* site level */
-  STATUS_ACCESS_DENIED                 = -501,
-  STATUS_SESSION_EXPIRED               = -500,
+  STATUS_ACCESS_DENIED                 = -500,
 
   /* application level */
-  STATUS_HTTP_ERROR                    = -303,
   STATUS_DATABASE_ERROR                = -302,
   STATUS_CONFIGURATION_ERROR           = -301,
   STATUS_INIT_ERROR                    = -300,
@@ -31,7 +29,8 @@ typedef enum
 
   /* positives */
   STATUS_SUCCESS                       = CSTUFF_SUCCESS,
-  STATUS_SUCCESS_WITH_REMARK
+  STATUS_SUCCESS_WITH_REMARK           = CSTUFF_SUCCESS_WITH_REMARK,
+  STATUS_PENDING                       = CSTUFF_PENDING
 
 } status_t;
 
