@@ -12,6 +12,7 @@
 #include <cStuff/log.h>
 #include <cStuff/list.h>
 #include <cStuff/str-utils.h>
+#include <cStuff/sock-utils.h> /* u_sleep */
 
 #include "status.h"
 #include "daemon.h"
@@ -274,13 +275,13 @@ load_channels( int * flags )
 
   uint64_t ret;
 
-  ret = dbx_format_query(
+  ret = dbx_query(
           sqlSelectChannels,
           (dbx_on_result_t) load_channels_on_result,
           (dbx_on_error_t)  load_channels_on_error,
           flags,
-          2, DBX_CONSTANT, cfg->instance,
-             DBX_UINT64,   gChannelsIndex
+          2, DBX_STRING, cfg->instance,
+             DBX_UINT64, gChannelsIndex
         );
 
   /* zero retcode means malloc error,
@@ -298,25 +299,29 @@ load_channels( int * flags )
 static int
 touch_database(int * flags)
 {
-  const char c_error[] = "database connection error (%s)";
+  const char c_error[] = "database error (%s)";
+  int result = 0;
 
-  switch (dbx_touch( !(*flags & DAEMON_FLAG_DATABASE_READY),
-                     *flags & DAEMON_FLAG_DATABASE_ERROR ))
+  switch ( dbx_touch() )
   {
+    case STATUS_PENDING:
+      result = MINIMAL_DELAY;
+
     case STATUS_SUCCESS:
       if ( !( *flags & DAEMON_FLAG_DATABASE_READY ))
       {
-        *flags |= DAEMON_FLAG_DATABASE_READY;
+        if (dbx_ready_connections_count())
+        {
+          *flags |= DAEMON_FLAG_DATABASE_READY;
 
-        if (*flags & DAEMON_FLAG_DATABASE_ERROR)
-          *flags ^= DAEMON_FLAG_DATABASE_ERROR;
+          if (*flags & DAEMON_FLAG_DATABASE_ERROR)
+            *flags ^= DAEMON_FLAG_DATABASE_ERROR;
 
-        log_state("database connected");
+          log_state("database connected");
+        }
       }
-      return 0;
+      return result;
 
-    case STATUS_PENDING:
-      return MINIMAL_DELAY;
 
     case STATUS_MALLOC_ERROR:
       if (! (*flags & DAEMON_FLAG_DATABASE_ERROR) )
@@ -329,14 +334,18 @@ touch_database(int * flags)
       break;
   }
 
-  if (*flags & DAEMON_FLAG_DATABASE_READY ) 
+  if ( ! dbx_ready_connections_count() )
   {
-    *flags ^= DAEMON_FLAG_DATABASE_READY;
+    if (*flags & DAEMON_FLAG_DATABASE_READY ) 
+    {
+      *flags ^= DAEMON_FLAG_DATABASE_READY;
 
-    remove_all_channels();
+      remove_all_channels();
+    }
+
+    *flags |= DAEMON_FLAG_DATABASE_ERROR;
   }
 
-  *flags |= DAEMON_FLAG_DATABASE_ERROR;
 
   /*
   if (do_reset)

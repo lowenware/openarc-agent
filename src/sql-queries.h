@@ -13,7 +13,7 @@
       "m.name "                                                               \
     "FROM "                                                                   \
       "channels c JOIN "                                                      \
-      "agents a ON c.agent_id = a.id JOIN"                                    \
+      "agents a ON c.agent_id = a.id JOIN "                                   \
       "modules m ON c.module_id = m.id "                                      \
     "WHERE "                                                                  \
       "a.instance=$1 AND "                                                    \

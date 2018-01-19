@@ -76,28 +76,3 @@ u_arc_command_to_text( arc_command_t command )
 }
 
 /* -------------------------------------------------------------------------- */
-
-int
-u_sock_select(int sd, uint32_t wait_usec, int mode)
-{
-  fd_set  fs,
-         *rfs = NULL,
-         *wfs = NULL;
-
-  struct timeval tv;
-
-  tv.tv_sec  = 0;
-  tv.tv_usec = wait_usec;
-
-  if (sd > -1)
-  {
-    FD_ZERO (&fs);
-    FD_SET(sd, &fs);
-
-    if (mode == 1) rfs = &fs; else wfs = &fs;
-  }
-
-  return select(sd+1, rfs, wfs, NULL, &tv);
-}
-
-/* -------------------------------------------------------------------------- */
