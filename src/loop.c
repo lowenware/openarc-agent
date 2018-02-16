@@ -25,6 +25,8 @@
 #include "store-heartbeat.h"
 #include "store-contact-id.h"
 #include "store-location.h"
+#include "store-client.h"
+#include "store-media.h"
 #include "loop.h"
 
 /* -------------------------------------------------------------------------- */
@@ -380,6 +382,11 @@ touch_channel( channel_t channel )
   {
     switch(record)
     {
+      case ARC_RECORD_CLIENT_CONNECTED:
+      case ARC_RECORD_CLIENT_DISCONNECTED:
+        status = store_client(channel, record, (arc_record_client_t)data, size);
+        break;
+
       case ARC_RECORD_CONTACT_ID:
         status = store_contact_id(channel, (arc_record_contact_id_t)data, size);
         break;
@@ -390,6 +397,10 @@ touch_channel( channel_t channel )
 
       case ARC_RECORD_LOCATION:
         status = store_location(channel, (arc_record_location_t)data, size);
+        break;
+
+      case ARC_RECORD_MEDIA:
+        status = store_media(channel, (arc_record_media_t)data, size);
         break;
 
       case ARC_RECORD_NULL:
@@ -413,7 +424,9 @@ touch_channel( channel_t channel )
           u_status_to_text(status)
         );
         /* _RESET command should never fail */
+        /*
         channel_send( channel, ARC_COMMAND_RESET, size, data );
+        */
         result *= 5;
     }
   }

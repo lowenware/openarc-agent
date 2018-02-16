@@ -9,8 +9,16 @@
 
 static
 const char errNoSymInMod[]     = "no symbol '%s' in '%s' module",
+           cSymAllocHandle[]   = ARC_STRINGIFY( ARC_MODULE_ALLOC_HANDLE ),
+           cSymFreeHandle[]    = ARC_STRINGIFY( ARC_MODULE_FREE_HANDLE ),
+           cSymSetHandle[]     = ARC_STRINGIFY( ARC_MODULE_SET_HANDLE ),
+           cSymGetError[]      = ARC_STRINGIFY( ARC_MODULE_GET_ERROR ),
+           cSymConfirmRecord[] = ARC_STRINGIFY( ARC_MODULE_CONFIRM_RECORD ),
+           cSymOpen[]          = ARC_STRINGIFY( ARC_MODULE_OPEN ),
+           cSymClose[]         = ARC_STRINGIFY( ARC_MODULE_CLOSE ),
            cSymRead[]          = ARC_STRINGIFY( ARC_MODULE_READ ),
            cSymWrite[]         = ARC_STRINGIFY( ARC_MODULE_WRITE ),
+
            cSymGetVersion[]    = ARC_STRINGIFY( ARC_MODULE_GET_VERSION ),
            cSymGetSdkVersion[] = ARC_STRINGIFY( ARC_MODULE_GET_SDK_VERSION );
 
@@ -65,6 +73,26 @@ module_new( module_t * self, const char * name )
   /* see GET_FUNC macro: shorter call + pointer's magic to avoid compiler
    *                     warnings
    * */
+  if ( ! GET_FUNC((*self)->alloc_handle, cSymAllocHandle) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->free_handle, cSymFreeHandle) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->set_handle, cSymSetHandle) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->get_error, cSymGetError) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->confirm_record, cSymConfirmRecord) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->open, cSymOpen) )
+    goto e_dlsym;
+
+  if ( ! GET_FUNC((*self)->close, cSymClose) )
+    goto e_dlsym;
 
   if ( ! GET_FUNC((*self)->read, cSymRead) )
     goto e_dlsym;

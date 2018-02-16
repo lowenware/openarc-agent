@@ -37,6 +37,8 @@ set ( SOURCE_FILES
   src/store-heartbeat.c
   src/store-contact-id.c
   src/store-location.c
+  src/store-client.c
+  src/store-media.c
 
 
   cStuff/dbx.c
@@ -189,6 +191,7 @@ endif()
 set(CONFIG_DESTINATION   "${SYSCONF_INSTALL_DIR}/${PROJECT_NAME}" )
 set(SYSTEMD_DESTINATION  "${CMAKE_INSTALL_PREFIX}/lib/systemd/system" )
 set(BINARIES_DESTINATION "${CMAKE_INSTALL_PREFIX}/sbin" )
+set(INCLUDES_DESTINATION "${CMAKE_INSTALL_PREFIX}/include" )
 set(SHARES_DESTINATION   "${SHARE_INSTALL_PREFIX}/${PROJECT_NAME}" )
 set(LOCALE_DESTINATION   "${SHARE_INSTALL_PREFIX}/locale" )
 set(MODULES_DESTINATION  "${LIB_INSTALL_DIR}/${PROJECT_NAME}/modules" )
@@ -271,6 +274,11 @@ install(
 install(
   TARGETS ${APPLICATION}
   DESTINATION ${BINARIES_DESTINATION}
+)
+
+install(
+  DIRECTORY include/${PROJECT_NAME}
+  DESTINATION ${INCLUDES_DESTINATION}
 )
 
 # -----------------------------------------------------------------------------

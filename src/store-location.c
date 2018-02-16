@@ -12,6 +12,14 @@ store_location( channel_t                 channel,
                 size_t                    size )
 {
 
+  printf(
+    "%s - %s, (%Lf,%Lf)\n",
+    record->code,
+    record->received,
+    record->latitude,
+    record->longitude
+  );
+
   return STATUS_SUCCESS;
 }
 

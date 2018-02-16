@@ -182,7 +182,7 @@ channel_new( uint32_t     id,
     if ( (self->name = str_copy(name)) != NULL )
     {
       /* get channel handler from driver */
-      status = module->write(NULL, ARC_COMMAND_ALLOCATE, 1, (void*)&self->m_hd);
+      status = module->alloc_handle( (void *) &self->m_hd);
 
       if ( status == ARC_STATUS_SUCCESS )
       {
@@ -190,8 +190,10 @@ channel_new( uint32_t     id,
         if ( _uri_to_params_list(uri, &conf) )
         {
           /* set up channel */
-          status = module->write(
-                     self->m_hd, ARC_COMMAND_CONFIGURE, conf->count, conf->list
+          status = module->set_handle(
+                     self->m_hd,
+                     conf->count,
+                     (char**) conf->list
                    );
 
           list_free(conf, free);
@@ -221,7 +223,7 @@ channel_free( channel_t self )
     free(self->name);
 
   if (self->m_hd)
-    self->module->write( self->m_hd, ARC_COMMAND_FREE, 0, NULL );
+    self->module->free_handle( self->m_hd );
 
   free(self);
 }
@@ -235,7 +237,7 @@ channel_open( channel_t self )
   arc_status_t   status;
   const char * ch_ptr;
 
-  status = self->module->write(self->m_hd, ARC_COMMAND_OPEN, 0, NULL);
+  status = self->module->open(self->m_hd);
 
   switch (status)
   {
@@ -254,9 +256,7 @@ channel_open( channel_t self )
     case ARC_STATUS_ERROR:
       self->flags |= CHANNEL_FLAG_ERROR;
 
-      status = self->module->write(
-                 self->m_hd, ARC_COMMAND_GET_ERROR, 1, &ch_ptr
-               );
+      status = self->module->get_error(self->m_hd, &ch_ptr);
 
       if (status != ARC_STATUS_SUCCESS)
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );
@@ -280,7 +280,7 @@ channel_close( channel_t self )
   arc_status_t   status;
   const char * ch_ptr;
 
-  status = self->module->write(self->m_hd, ARC_COMMAND_CLOSE, 0, NULL);
+  status = self->module->close(self->m_hd);
 
   switch (status)
   {
@@ -297,9 +297,7 @@ channel_close( channel_t self )
     case ARC_STATUS_ERROR:
       self->flags |= CHANNEL_FLAG_ERROR;
 
-      status = self->module->write(
-                 self->m_hd, ARC_COMMAND_GET_ERROR, 1, &ch_ptr
-               );
+      status = self->module->get_error( self->m_hd, &ch_ptr );
 
       if (status != ARC_STATUS_SUCCESS)
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );
@@ -342,12 +340,7 @@ channel_recv( channel_t       self,
     case ARC_STATUS_ERROR:
       self->flags |= CHANNEL_FLAG_ERROR;
 
-      status = self->module->write(
-                  self->m_hd,
-                  ARC_COMMAND_GET_ERROR,
-                  1, 
-                  &ch_ptr
-              );
+      status = self->module->get_error( self->m_hd, &ch_ptr);
 
       if (status != ARC_STATUS_SUCCESS)
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );
@@ -387,12 +380,7 @@ channel_send( channel_t       self,
     case ARC_STATUS_ERROR:
       self->flags |= CHANNEL_FLAG_ERROR;
 
-      status = self->module->write(
-                      self->m_hd,
-                      ARC_COMMAND_GET_ERROR,
-                      1,
-                      &ch_ptr
-                    );
+      status = self->module->get_error( self->m_hd, &ch_ptr );
 
       if (status != ARC_STATUS_SUCCESS)
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );

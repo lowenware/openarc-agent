@@ -92,6 +92,8 @@ function do_install {
   cd build/
   sudo make install $1
   cd ..
+  sudo rm -Rf build/*
+
 }
 
 # -----------------------------------------------------------------------------

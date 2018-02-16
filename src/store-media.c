@@ -2,16 +2,18 @@
 #include <cStuff/dbx.h>
 
 #include "sql-queries.h"
-#include "store-heartbeat.h"
+#include "store-media.h"
 
 /* -------------------------------------------------------------------------- */
 
 status_t
-store_heartbeat(  channel_t                  channel,
-                  arc_record_heartbeat_t     record,
-                  size_t                     size )
+store_media( channel_t            channel,
+             arc_record_media_t   record,
+             size_t               size )
 {
-  printf("%s - %s\n", record->code, record->received);
+  printf(
+    "talkback %s (%s) of %ld bytes\n", record->code, record->type, record->size
+  );
 
   return STATUS_SUCCESS;
 }

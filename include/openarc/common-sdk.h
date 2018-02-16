@@ -8,9 +8,10 @@
 
 typedef enum
 {
-  ARC_STATUS_ERROR        = -1,
-  ARC_STATUS_SUCCESS      =  0,
-  ARC_STATUS_IDLE         =  1
+  ARC_STATUS_ERROR               = -1,
+  ARC_STATUS_SUCCESS             =  0,
+  ARC_STATUS_SUCCESS_WITH_REMARK =  1,
+  ARC_STATUS_IDLE                =  2
 
 } arc_status_t;
 

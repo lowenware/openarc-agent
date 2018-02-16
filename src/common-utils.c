@@ -45,10 +45,13 @@ u_arc_record_to_text( arc_record_t record )
 
   switch( record )
   {
-    case ARC_RECORD_NULL:       return "Null-Record";
-    case ARC_RECORD_HEARTBEAT:  return "Heartbeat";
-    case ARC_RECORD_CONTACT_ID: return "Contact ID";
-    case ARC_RECORD_LOCATION:   return "Location";
+    case ARC_RECORD_NULL:                 return "Null-Record";
+    case ARC_RECORD_CLIENT_CONNECTED:     return "Client Connected";
+    case ARC_RECORD_CLIENT_DISCONNECTED:  return "Client Disconnected";
+    case ARC_RECORD_HEARTBEAT:            return "Heartbeat";
+    case ARC_RECORD_CONTACT_ID:           return "Contact ID";
+    case ARC_RECORD_LOCATION:             return "Location";
+    case ARC_RECORD_MEDIA:                return "Media";
   }
 
   return "unknown record";
@@ -61,15 +64,11 @@ u_arc_command_to_text( arc_command_t command )
 {
   switch( command )
   {
-    case ARC_COMMAND_ALLOCATE:  return "ALLOCATE";
-    case ARC_COMMAND_FREE:      return "FREE";
-    case ARC_COMMAND_CONFIGURE: return "CONFIGURE";
-    case ARC_COMMAND_OPEN:      return "OPEN";
-    case ARC_COMMAND_CLOSE:     return "CLOSE";
-    case ARC_COMMAND_GET_ERROR: return "GET_ERROR";
-    case ARC_COMMAND_GET_ID:    return "GET_ID";
-    case ARC_COMMAND_CONFIRM:   return "CONFIRM";
-    case ARC_COMMAND_RESET:     return "RESET";
+    case ARC_MODULE_SET_TIMEZONE: return "SET_TIMEZONE";
+    case ARC_MODULE_SET_TIME:     return "SET_TIME";
+    case ARC_MODULE_ARM:          return "ARM";
+    case ARC_MODULE_DISARM:       return "DISARM";
+    case ARC_MODULE_CALLBACK:     return "CALLBACK";
   }
 
   return "unknown command";
