@@ -271,6 +271,11 @@ daemon_start(int go_bg, daemon_loop_t loop_run )
 
     pid = getpid();
 
+    if (fs_make_file_path( cfg->pidFile ) == -1)
+      return daemon_start_failure(
+               STATUS_SYSCALL_ERROR, errSavePid, cfg->pidFile, strerror(errno)
+             );
+
     if ( (f = fopen( cfg->pidFile, "w" )) == NULL)
       return daemon_start_failure(
                STATUS_SYSCALL_ERROR, errSavePid, cfg->pidFile, strerror(errno)

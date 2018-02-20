@@ -9,18 +9,18 @@
 
 static
 const char errNoSymInMod[]     = "no symbol '%s' in '%s' module",
-           cSymAllocHandle[]   = ARC_STRINGIFY( ARC_MODULE_ALLOC_HANDLE ),
-           cSymFreeHandle[]    = ARC_STRINGIFY( ARC_MODULE_FREE_HANDLE ),
-           cSymSetHandle[]     = ARC_STRINGIFY( ARC_MODULE_SET_HANDLE ),
-           cSymGetError[]      = ARC_STRINGIFY( ARC_MODULE_GET_ERROR ),
-           cSymConfirmRecord[] = ARC_STRINGIFY( ARC_MODULE_CONFIRM_RECORD ),
-           cSymOpen[]          = ARC_STRINGIFY( ARC_MODULE_OPEN ),
-           cSymClose[]         = ARC_STRINGIFY( ARC_MODULE_CLOSE ),
-           cSymRead[]          = ARC_STRINGIFY( ARC_MODULE_READ ),
-           cSymWrite[]         = ARC_STRINGIFY( ARC_MODULE_WRITE ),
+           cSymAllocHandle[]   = ARC_TO_STRING( ARC_MODULE_ALLOC_HANDLE ),
+           cSymFreeHandle[]    = ARC_TO_STRING( ARC_MODULE_FREE_HANDLE ),
+           cSymSetHandle[]     = ARC_TO_STRING( ARC_MODULE_SET_HANDLE ),
+           cSymGetError[]      = ARC_TO_STRING( ARC_MODULE_GET_ERROR ),
+           cSymConfirmRecord[] = ARC_TO_STRING( ARC_MODULE_CONFIRM_RECORD ),
+           cSymOpen[]          = ARC_TO_STRING( ARC_MODULE_OPEN ),
+           cSymClose[]         = ARC_TO_STRING( ARC_MODULE_CLOSE ),
+           cSymRead[]          = ARC_TO_STRING( ARC_MODULE_READ ),
+           cSymWrite[]         = ARC_TO_STRING( ARC_MODULE_WRITE ),
 
-           cSymGetVersion[]    = ARC_STRINGIFY( ARC_MODULE_GET_VERSION ),
-           cSymGetSdkVersion[] = ARC_STRINGIFY( ARC_MODULE_GET_SDK_VERSION );
+           cSymGetVersion[]    = ARC_TO_STRING( ARC_MODULE_GET_VERSION ),
+           cSymGetSdkVersion[] = ARC_TO_STRING( ARC_MODULE_GET_SDK_VERSION );
 
 
 /* -------------------------------------------------------------------------- */
@@ -43,7 +43,7 @@ module_new( module_t * self, const char * name )
 
   arc_module_get_version_t        get_version;
 
-  if ( !(mod_file = str_printf("%s/lib%s.so", cfg->modulesRoot, name)) )
+  if ( !(mod_file = str_printf("%s/%s.so", cfg->modulesRoot, name)) )
     return STATUS_MALLOC_ERROR;
 
   if ( access( mod_file, F_OK) != 0 )
@@ -51,6 +51,8 @@ module_new( module_t * self, const char * name )
     result = STATUS_NOT_FOUND;
     goto finally;
   }
+
+
 
   if ( !(*self = calloc(1, sizeof(struct module))) )
   {
@@ -66,6 +68,7 @@ module_new( module_t * self, const char * name )
 
   if ( !((*self)->desc = dlopen( mod_file, RTLD_LAZY )) )
   {
+    log_debug("dlopen() = %s", dlerror());
     result = STATUS_SYSCALL_ERROR;
     goto release_self;
   }

@@ -31,8 +31,8 @@ typedef struct arc_version * arc_version_t;
 
 /* -------------------------------------------------------------------------- */
 
-#define ARC_X_STRINGIFY(s) ARC_STRINGIFY(s)
 #define ARC_STRINGIFY(s) #s
+#define ARC_TO_STRING(s) ARC_STRINGIFY(s)
 
 /* -------------------------------------------------------------------------- */
 #endif

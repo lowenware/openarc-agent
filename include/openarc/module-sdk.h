@@ -26,6 +26,15 @@
 #define ARC_MODULE_GET_VERSION     mod_get_version
 #define ARC_MODULE_GET_SDK_VERSION mod_get_sdk_version
 
+#define ARC_MODULE_ALLOC_HANDLE    mod_alloc_handle
+#define ARC_MODULE_FREE_HANDLE     mod_free_handle
+#define ARC_MODULE_SET_HANDLE      mod_set_handle
+#define ARC_MODULE_GET_ERROR       mod_get_error
+#define ARC_MODULE_CONFIRM_RECORD  mod_confirm_record
+#define ARC_MODULE_OPEN            mod_open
+#define ARC_MODULE_CLOSE           mod_close
+
+
 /* -------------------------------------------------------------------------- */
 
 #define ARC_MODULE_PROTOCOL        "protocol"
