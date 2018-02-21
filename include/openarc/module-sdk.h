@@ -214,12 +214,14 @@ typedef struct arc_record_media * arc_record_media_t;
                                          VERSION_TWEAK,                     \
                                          VERSION_BUILD };                   \
                                                                             \
+  __attribute__ ((visibility ("default") ))                                 \
   void                                                                      \
   ARC_MODULE_GET_SDK_VERSION( arc_version_t version )                       \
   {                                                                         \
     memcpy(version, &mod_sdk_version, sizeof(struct arc_version));          \
   }                                                                         \
                                                                             \
+  __attribute__ ((visibility ("default") ))                                 \
   void                                                                      \
   ARC_MODULE_GET_VERSION( arc_version_t version )                           \
   {                                                                         \
