@@ -1,3 +1,5 @@
+#include <stdio.h>
+
 #include <stdlib.h>
 #include <string.h>
 
@@ -26,7 +28,7 @@ static const char cPath[]     = ARC_MODULE_PATH;
   ( uri->VAL > 0 ) && (                 \
   result = _add_key_value(              \
                 *params,                \
-                KEY,                    \
+               KEY,                    \
                 sizeof(KEY)-1,          \
                 &uri_str[uri->VAL],     \
                 uri->VAL##_len          \
@@ -56,7 +58,7 @@ _add_key_value( list_t       params,
 
     pair[j++]='=';
 
-    for (i=0; i<value_len; i++, j++)
+    for (i=0; i<value_len; i++)
     {
       pair[j++]=value[i];
     }
@@ -186,9 +188,11 @@ channel_new( uint32_t     id,
 
       if ( status == ARC_STATUS_SUCCESS )
       {
+printf("module handle allocated\n");
         /* prepare parameters */
-        if ( _uri_to_params_list(uri, &conf) )
+        if ( _uri_to_params_list(uri, &conf) == ARC_STATUS_SUCCESS)
         {
+printf("params list ready\n");
           /* set up channel */
           status = module->set_handle(
                      self->m_hd,
@@ -200,6 +204,7 @@ channel_new( uint32_t     id,
 
           if (status == ARC_STATUS_SUCCESS)
             return self;
+printf("setting failed\n");
         }
       }
 
