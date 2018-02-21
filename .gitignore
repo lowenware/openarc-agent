@@ -8,4 +8,5 @@ js_bak/*
 *.log
 *.pid
 *.service
+*.swp
 
