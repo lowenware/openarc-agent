@@ -11,7 +11,7 @@ store_heartbeat(  channel_t                  channel,
                   arc_record_heartbeat_t     record,
                   size_t                     size )
 {
-  printf("%s - %s\n", record->code, record->received);
+  log_state("%s - %s\n", record->code, record->received);
 
   return STATUS_SUCCESS;
 }

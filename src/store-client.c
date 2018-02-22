@@ -26,7 +26,7 @@ store_client(  channel_t               channel,
   port = (int)(ntohs( record->address.sin_port )) & 0xFFFF;
 
   log_state(
-    "%s: %s:%d(%"PRIu64") - %s\n",
+    "%s: %s:%d(%"PRIu64")\n",
     ((record_type==ARC_RECORD_CLIENT_CONNECTED) ? "CONNECT" : "DISCONNECT"),
     host,
     port,

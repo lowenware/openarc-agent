@@ -180,17 +180,21 @@ channel_new( uint32_t     id,
   {
     self->module = module;
     module->refs++;
+printf( "channel: structure allocated\n");
 
     if ( (self->name = str_copy(name)) != NULL )
     {
+printf( "channel: name allocated\n");
       /* get channel handler from driver */
       status = module->alloc_handle( (void *) &self->m_hd);
 
       if ( status == ARC_STATUS_SUCCESS )
       {
+printf( "channel: handle allocated\n");
         /* prepare parameters */
         if ( _uri_to_params_list(uri, &conf) == STATUS_SUCCESS)
         {
+printf( "channel: params allocated\n");
           /* set up channel */
           status = module->set_handle(
                      self->m_hd,
@@ -198,10 +202,14 @@ channel_new( uint32_t     id,
                      (char**) conf->list
                    );
 
+printf( "channel: set handle returned %d\n", status);
           list_free(conf, free);
 
           if (status == ARC_STATUS_SUCCESS)
+{
+printf( "channel: config allocated\n");
             return self;
+}
         }
       }
 
@@ -263,7 +271,7 @@ channel_open( channel_t self )
       if (status != ARC_STATUS_SUCCESS)
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );
 
-      log_alert( "[%s] channel opening failed; error=%s", ch_ptr );
+      log_alert( "[%s] channel opening failed; error=%s", self->name, ch_ptr );
 
       return STATUS_EXTCALL_ERROR;
 
