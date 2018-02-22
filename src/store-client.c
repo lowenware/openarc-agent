@@ -3,6 +3,7 @@
 #include <inttypes.h>
 
 #include <cStuff/dbx.h>
+#include <cStuff/log.h>
 
 #include "sql-queries.h"
 #include "store-client.h"
@@ -24,12 +25,12 @@ store_client(  channel_t               channel,
 
   port = (int)(ntohs( record->address.sin_port )) & 0xFFFF;
 
-  printf(
-    "client %s:%d(%"PRIu64") - %s\n",
+  log_state(
+    "%s: %s:%d(%"PRIu64") - %s\n",
+    ((record_type==ARC_RECORD_CLIENT_CONNECTED) ? "CONNECT" : "DISCONNECT"),
     host,
     port,
-    record->callsign,
-    ((record_type==ARC_RECORD_CLIENT_CONNECTED) ? "connected" : "disconnected")
+    record->callsign
   );
 
   return STATUS_SUCCESS;

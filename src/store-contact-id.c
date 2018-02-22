@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <cStuff/dbx.h>
+#include <cStuff/log.h>
 
 #include "sql-queries.h"
 #include "store-contact-id.h"

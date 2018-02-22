@@ -188,11 +188,9 @@ channel_new( uint32_t     id,
 
       if ( status == ARC_STATUS_SUCCESS )
       {
-printf("module handle allocated\n");
         /* prepare parameters */
-        if ( _uri_to_params_list(uri, &conf) == ARC_STATUS_SUCCESS)
+        if ( _uri_to_params_list(uri, &conf) == STATUS_SUCCESS)
         {
-printf("params list ready\n");
           /* set up channel */
           status = module->set_handle(
                      self->m_hd,
@@ -204,7 +202,6 @@ printf("params list ready\n");
 
           if (status == ARC_STATUS_SUCCESS)
             return self;
-printf("setting failed\n");
         }
       }
 
