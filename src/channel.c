@@ -340,7 +340,7 @@ channel_recv( channel_t       self,
   {
     case ARC_STATUS_SUCCESS:
       log_state(
-        "[%s] --> %d x %s", self->name, count, u_arc_record_to_text(*record)
+        "[%s] --> %lu x %s", self->name, count, u_arc_record_to_text(*record)
       );
       return STATUS_SUCCESS;
 

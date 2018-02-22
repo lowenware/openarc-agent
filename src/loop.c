@@ -362,10 +362,10 @@ static int
 touch_channel( channel_t channel )
 {
   int             result = MINIMAL_DELAY;
-  arc_record_t    record;
+  arc_record_t    record = ARC_RECORD_NULL;
   arc_command_t   command;
-  void          * data;
-  size_t          size;
+  void          * data = NULL;
+  size_t          size = 0;
   status_t        status = STATUS_PENDING;
 
   /* opening */

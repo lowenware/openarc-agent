@@ -121,7 +121,7 @@ typedef arc_status_t
 (*arc_module_read_t) (          void          * handle,
                                 arc_record_t  * record_type,
                                 size_t        * count,
-                                void          * record );
+                                void         ** record );
 
 /* -------------------------------------------------------------------------- */
 
