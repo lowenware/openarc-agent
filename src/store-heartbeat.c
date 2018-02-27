@@ -99,6 +99,7 @@ store_heartbeat(  channel_t                  channel,
   store_t store;
 
   uint64_t dbx_id;
+  unsigned int sqls_count = size * SQL_COUNT + 2;
 
   while (size--)
   {
@@ -116,7 +117,7 @@ store_heartbeat(  channel_t                  channel,
     r++;
   }
 
-  if ( !(store = store_new( channel, record, ARC_RECORD_HEARTBEAT, SQLS_COUNT * size+2 )) )
+  if ( !(store = store_new(channel, record, ARC_RECORD_HEARTBEAT, sqls_count)) )
     goto except;
 
   dbx_id = dbx_query_transaction(
