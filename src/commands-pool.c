@@ -10,7 +10,7 @@ struct pool_item
 {
   void           * data;
   channel_t        channel;
-  size_t           size;
+  unsigned int           size;
   arc_command_t    command;
   int              flags;
 };
@@ -26,7 +26,7 @@ typedef struct pool_item * pool_item_t;
 static pool_item_t
 pool_item_new( arc_command_t    command,
                channel_t        channel,
-               size_t           size,
+               unsigned int           size,
                void           * data )
 {
   pool_item_t self;
@@ -72,7 +72,7 @@ commands_pool_release()
 status_t
 commands_pool_add( arc_command_t    command,
                    channel_t        channel,
-                   size_t           size,
+                   unsigned int     size,
                    void           * data)
 {
   pool_item_t item;
@@ -93,7 +93,7 @@ commands_pool_add( arc_command_t    command,
 status_t
 commands_pool_get( arc_command_t  * command,
                    channel_t        channel,
-                   size_t         * size,
+                   unsigned int   * size,
                    void          ** data)
 {
   pool_item_t item;

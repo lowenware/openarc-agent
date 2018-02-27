@@ -89,7 +89,7 @@ finally:
 status_t
 store_heartbeat(  channel_t                  channel,
                   arc_record_heartbeat_t     record,
-                  size_t                     size )
+                  unsigned int               size )
 {
   char * recd_sql = NULL,
        * list_sql = NULL,

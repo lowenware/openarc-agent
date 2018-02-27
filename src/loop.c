@@ -361,7 +361,7 @@ touch_channel( channel_t channel )
   arc_record_t    record = ARC_RECORD_NULL;
   arc_command_t   command;
   void          * data = NULL;
-  size_t          size = 0;
+  unsigned int    size = 0;
   status_t        status = STATUS_PENDING;
 
   /* opening */

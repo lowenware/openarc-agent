@@ -89,7 +89,7 @@ typedef arc_status_t
 
 typedef arc_status_t
 (*arc_module_set_handle_t)(     void          * handle,
-                                size_t          count,
+                                unsigned int    count,
                                 char         ** p_list );
 
 /* -------------------------------------------------------------------------- */
@@ -120,7 +120,7 @@ typedef arc_status_t
 typedef arc_status_t
 (*arc_module_read_t) (          void          * handle,
                                 arc_record_t  * record_type,
-                                size_t        * count,
+                                unsigned int  * count,
                                 void         ** record );
 
 /* -------------------------------------------------------------------------- */
@@ -128,7 +128,7 @@ typedef arc_status_t
 typedef arc_status_t
 (*arc_module_write_t) (         void          * handle,
                                 arc_command_t   command,
-                                size_t          count,
+                                unsigned int    count,
                                 void          * data );
 
 /* -------------------------------------------------------------------------- */

@@ -23,7 +23,7 @@ struct store
 {
   channel_t       channel;
   void          * records;
-  size_t          sqls_count;
+  unsigned int    sqls_count;
   arc_record_t    records_type;
 };
 
@@ -36,7 +36,7 @@ store_t
 store_new( channel_t       channel,
            void          * records,
            arc_record_t    records_type,
-           size_t          sqls_count );
+           unsigned int    sqls_count );
 
 #define store_free(self) free(self);
 
@@ -60,38 +60,38 @@ store_on_sql_error( const char * e_msg,
 
 
 status_t
-store_client(  channel_t               channel,
-               arc_record_t            record_type,
-               arc_record_client_t     record,
-               size_t                  size );
+store_client(     channel_t               channel,
+                  arc_record_t            record_type,
+                  arc_record_client_t     record,
+                  unsigned int            size );
 
 /* -------------------------------------------------------------------------- */
 
 status_t
 store_contact_id( channel_t                  channel,
                   arc_record_contact_id_t    record,
-                  size_t                     size );
+                  unsigned int               size );
 
 /* -------------------------------------------------------------------------- */
 
 status_t
 store_heartbeat(  channel_t                  channel,
                   arc_record_heartbeat_t     record,
-                  size_t                     size );
+                  unsigned int               size );
 
 /* -------------------------------------------------------------------------- */
 
 status_t
 store_location(   channel_t                  channel,
                   arc_record_location_t      record,
-                  size_t                     size );
+                  unsigned int               size );
 
 /* -------------------------------------------------------------------------- */
 
 status_t
-store_media( channel_t             channel,
-             arc_record_media_t    record,
-             size_t                size );
+store_media(      channel_t             channel,
+                  arc_record_media_t    record,
+                  unsigned int          size );
 
 /* -------------------------------------------------------------------------- */
 

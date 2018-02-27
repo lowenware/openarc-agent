@@ -45,7 +45,7 @@ channel_close( channel_t self );
 status_t
 channel_recv( channel_t       self,
               arc_record_t *  record,
-              size_t       *  count,
+              unsigned int *  count,
               void         ** data);
 
 /* -------------------------------------------------------------------------- */
@@ -53,7 +53,7 @@ channel_recv( channel_t       self,
 status_t
 channel_send( channel_t       self,
               arc_command_t   command,
-              size_t          count,
+              unsigned int    count,
               void          * data );
 
 /* -------------------------------------------------------------------------- */

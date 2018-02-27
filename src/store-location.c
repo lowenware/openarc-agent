@@ -10,7 +10,7 @@
 status_t
 store_location( channel_t                 channel,
                 arc_record_location_t     record,
-                size_t                    size )
+                unsigned int              size )
 {
 
   log_state(

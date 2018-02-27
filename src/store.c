@@ -9,7 +9,7 @@ store_t
 store_new( channel_t       channel,
            void          * records,
            arc_record_t    records_type,
-           size_t          sqls_count)
+           unsigned int    sqls_count)
 {
   store_t self;
 
@@ -32,7 +32,7 @@ store_on_sql_result( PGresult * res, int i_res, store_t store )
 {
   channel_t channel = store->channel;
 
-  printf("STORE RESULT: %d of %lu\n", i_res, store->sqls_count);
+  printf("STORE RESULT: %d of %u\n", i_res, store->sqls_count);
 
   if (i_res != store->sqls_count)
     return true;
@@ -57,7 +57,7 @@ store_on_sql_error( const char * e_msg,
 {
   channel_t channel = store->channel;
 
-  printf("STORE ERROR: %d of %lu\n", i_res, store->sqls_count);
+  printf("STORE ERROR: %d of %u\n", i_res, store->sqls_count);
 
   channel->module->confirm_record( channel->m_hd, store->records, 0 );
 

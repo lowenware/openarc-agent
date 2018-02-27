@@ -11,7 +11,7 @@
 status_t
 store_media( channel_t            channel,
              arc_record_media_t   record,
-             size_t               size )
+             unsigned int         size )
 {
   log_state(
     "MEDIA: %s (%s) of %ld bytes\n", record->code, record->type, record->size
@@ -22,10 +22,10 @@ store_media( channel_t            channel,
   {
     fwrite(record->data, 1, record->size, f);
     fclose(f);
-    log_state("/tmp/input.wav saved");
+    log_state("/tmp/input.amr saved");
   }
   else
-    log_error("/tmp/input.wav failed");
+    log_error("/tmp/input.amr failed");
 
   
 

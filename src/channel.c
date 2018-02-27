@@ -328,7 +328,7 @@ channel_close( channel_t self )
 status_t
 channel_recv( channel_t       self,
               arc_record_t *  record,
-              size_t       *  count,
+              unsigned int *  count,
               void         ** data)
 {
   arc_status_t status;
@@ -340,7 +340,7 @@ channel_recv( channel_t       self,
   {
     case ARC_STATUS_SUCCESS:
       log_state(
-        "[%s] --> %lu x %s", self->name, *count, u_arc_record_to_text(*record)
+        "[%s] --> %u x %s", self->name, *count, u_arc_record_to_text(*record)
       );
       return STATUS_SUCCESS;
 
@@ -370,7 +370,7 @@ channel_recv( channel_t       self,
 status_t
 channel_send( channel_t       self,
               arc_command_t   command,
-              size_t          count,
+              unsigned int    count,
               void          * data )
 {
   arc_status_t   status;

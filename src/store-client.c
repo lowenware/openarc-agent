@@ -14,7 +14,7 @@ status_t
 store_client(  channel_t               channel,
                arc_record_t            record_type,
                arc_record_client_t     record,
-               size_t                  size )
+               unsigned int                  size )
 {
   char host[INET_ADDRSTRLEN+1];
   int  port;
