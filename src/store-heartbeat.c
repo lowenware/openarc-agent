@@ -25,7 +25,7 @@ const char sqlHeartBeat[] =
     "UPDATE "
       "device_channels dc "
     "SET "
-      "heartbeat_at='$5', " /* recieved_at */
+      "heartbeat_at=$5, " /* recieved_at */
       "is_online=TRUE "
     "FROM "
       "devices d "
@@ -116,7 +116,7 @@ store_heartbeat(  channel_t                  channel,
     r++;
   }
 
-  if ( !(store = store_new( channel, record, size, SQLS_COUNT * size )) )
+  if ( !(store = store_new( channel, record, ARC_RECORD_HEARTBEAT, SQLS_COUNT * size+2 )) )
     goto except;
 
   dbx_id = dbx_query_transaction(
