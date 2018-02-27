@@ -22,11 +22,7 @@
 #include "sql-queries.h"
 #include "commands-pool.h"
 #include "common-utils.h"
-#include "store-heartbeat.h"
-#include "store-contact-id.h"
-#include "store-location.h"
-#include "store-client.h"
-#include "store-media.h"
+#include "store.h"
 #include "loop.h"
 
 /* -------------------------------------------------------------------------- */
@@ -277,7 +273,7 @@ load_channels( int * flags )
 
   uint64_t ret;
 
-  ret = dbx_query(
+  ret = dbx_query_format(
           sqlSelectChannels,
           (dbx_on_result_t) load_channels_on_result,
           (dbx_on_error_t)  load_channels_on_error,

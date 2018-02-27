@@ -15,6 +15,7 @@ u_status_to_text( status_t status )
     case STATUS_DATABASE_ERROR:      return "database error"; 
     case STATUS_CONFIGURATION_ERROR: return "configuration error";
     case STATUS_INIT_ERROR:          return "init error";
+    case STATUS_BAD_RECORD:          return "bad record";
 
     /* daemon level */        
     case STATUS_PID_EXISTS:          return "PID exists";

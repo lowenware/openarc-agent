@@ -11,6 +11,7 @@ typedef enum
   STATUS_ACCESS_DENIED                 = -500,
 
   /* application level */
+  STATUS_BAD_RECORD                    = -303,
   STATUS_DATABASE_ERROR                = -302,
   STATUS_CONFIGURATION_ERROR           = -301,
   STATUS_INIT_ERROR                    = -300,

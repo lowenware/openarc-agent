@@ -6,7 +6,7 @@
 #include <cStuff/log.h>
 
 #include "sql-queries.h"
-#include "store-client.h"
+#include "store.h"
 
 /* -------------------------------------------------------------------------- */
 

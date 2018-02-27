@@ -39,6 +39,7 @@ set ( SOURCE_FILES
   src/store-location.c
   src/store-client.c
   src/store-media.c
+  src/store.c
 
 
   cStuff/dbx.c
@@ -64,6 +65,8 @@ add_definitions(
 
   -DCSTUFF_STR_UTILS_WITH_NCOPY
   -DCSTUFF_STR_UTILS_WITH_COPY
+  -DCSTUFF_STR_UTILS_WITH_CAT 
+  -DCSTUFF_STR_UTILS_WITH_NCAT
   -DCSTUFF_STR_UTILS_WITH_CMPI
   -DCSTUFF_STR_UTILS_WITH_PRINTF
 

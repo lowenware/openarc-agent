@@ -3,7 +3,7 @@
 #include <cStuff/log.h>
 
 #include "sql-queries.h"
-#include "store-location.h"
+#include "store.h"
 
 /* -------------------------------------------------------------------------- */
 

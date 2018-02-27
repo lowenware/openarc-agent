@@ -4,7 +4,7 @@
 #include <cStuff/log.h>
 
 #include "sql-queries.h"
-#include "store-media.h"
+#include "store.h"
 
 /* -------------------------------------------------------------------------- */
 
