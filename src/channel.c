@@ -178,6 +178,7 @@ channel_new( uint32_t     id,
 
   if( (self = calloc(1, sizeof(struct channel))) != NULL )
   {
+    self->id=id;
     self->module = module;
     module->refs++;
 printf( "channel: structure allocated\n");

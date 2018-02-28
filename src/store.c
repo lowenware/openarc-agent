@@ -34,7 +34,7 @@ store_on_sql_result( PGresult * res, int i_res, store_t store )
 
   printf("STORE RESULT: %d of %u\n", i_res, store->sqls_count);
 
-  if (i_res != store->sqls_count)
+  if (i_res+1 != store->sqls_count)
     return true;
 
   store->channel->module->confirm_record( channel->m_hd, store->records, 1 );
