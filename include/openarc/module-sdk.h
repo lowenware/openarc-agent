@@ -30,7 +30,7 @@
 #define ARC_MODULE_FREE_HANDLE     mod_free_handle
 #define ARC_MODULE_SET_HANDLE      mod_set_handle
 #define ARC_MODULE_GET_ERROR       mod_get_error
-#define ARC_MODULE_CONFIRM_RECORD  mod_confirm_record
+#define ARC_MODULE_CONFIRM         mod_confirm
 #define ARC_MODULE_OPEN            mod_open
 #define ARC_MODULE_CLOSE           mod_close
 
@@ -56,7 +56,19 @@ typedef enum
   ARC_RECORD_LOCATION            = 400,
   ARC_RECORD_MEDIA               = 500
 
-} arc_record_t;
+} arc_record_class_t;
+
+/* -------------------------------------------------------------------------- */
+
+struct arc_record
+{
+  arc_record_class_t    recordClass;
+};
+
+
+typedef struct arc_record * arc_record_t;
+
+#define ARC_RECORD( x ) ( (struct arc_record *) x )
 
 /* -------------------------------------------------------------------------- */
 
@@ -89,8 +101,8 @@ typedef arc_status_t
 
 typedef arc_status_t
 (*arc_module_set_handle_t)(     void          * handle,
-                                unsigned int    count,
-                                char         ** p_list );
+                                char         ** p_list,
+                                unsigned int    size );
 
 /* -------------------------------------------------------------------------- */
 
@@ -101,8 +113,8 @@ typedef arc_status_t
 /* -------------------------------------------------------------------------- */
 
 typedef arc_status_t
-(*arc_module_confirm_record_t)( void          * handle, 
-                                void          * p_record, 
+(*arc_module_confirm_t)(        void          * handle, 
+                                void          * p_list, 
                                 int             value);
 
 /* -------------------------------------------------------------------------- */
@@ -118,23 +130,24 @@ typedef arc_status_t
 /* -------------------------------------------------------------------------- */
 
 typedef arc_status_t
-(*arc_module_read_t) (          void          * handle,
-                                arc_record_t  * record_type,
-                                unsigned int  * count,
-                                void         ** record );
+(*arc_module_read_t) (          void              *  handle,
+                                arc_record_t      ** p_list,
+                                unsigned int      *  size  );
 
 /* -------------------------------------------------------------------------- */
 
 typedef arc_status_t
 (*arc_module_write_t) (         void          * handle,
                                 arc_command_t   command,
-                                unsigned int    count,
-                                void          * data );
+                                void          * data,
+                                unsigned int    size );
 
 /* -------------------------------------------------------------------------- */
 
+
 struct arc_record_client
 {
+  struct arc_record     record;
   struct sockaddr_in    address;
   uint64_t              callsign;
 };
@@ -145,11 +158,12 @@ typedef struct arc_record_client * arc_record_client_t;
 
 struct arc_record_heartbeat
 {
-  char        * received; /* always utc */
-  char        * code;
-  uint32_t      callsign;
-  int8_t        gsmLevel;
-  int8_t        batLevel;
+  struct arc_record     record;
+  char                * received; /* always utc */
+  char                * code;
+  uint64_t              callsign;
+  int8_t                gsmLevel;
+  int8_t                batLevel;
 };
 
 typedef struct arc_record_heartbeat * arc_record_heartbeat_t;
@@ -158,17 +172,18 @@ typedef struct arc_record_heartbeat * arc_record_heartbeat_t;
 
 struct arc_record_location
 {
-  char        * occured;  /* device timezone */
-  char        * received; /* always utc */
-  char        * code;
-  uint32_t      callsign;
-  long double   latitude;
-  long double   longitude;
-  double        altitude;
-  float         speed;
-  float         direction;
-  int8_t        gsmLevel;
-  int8_t        batLevel;
+  struct arc_record     record;
+  char                * occured;  /* device timezone */
+  char                * received; /* always utc */
+  char                * code;
+  uint64_t              callsign;
+  long double           latitude;
+  long double           longitude;
+  double                altitude;
+  float                 speed;
+  float                 direction;
+  int8_t                gsmLevel;
+  int8_t                batLevel;
 };
 
 typedef struct arc_record_location * arc_record_location_t;
@@ -177,13 +192,14 @@ typedef struct arc_record_location * arc_record_location_t;
 
 struct arc_record_contact_id
 {
-  char        * occured;        /* device timezone */
-  char        * received;       /* always utc */
-  uint32_t      account;        /* account id */
-  uint16_t      code;           /* event code */
-  uint16_t      zone;           /* zone code */
-  int8_t        partition;      /* partition code */
-  int8_t        gsmlevel;          /* signal level */
+  struct arc_record     record;
+  char                * occured;        /* device timezone */
+  char                * received;       /* always utc */
+  uint64_t              callsign;        /* account id */
+  uint16_t              code;           /* event code */
+  uint16_t              zone;           /* zone code */
+  int8_t                partition;      /* partition code */
+  int8_t                gsmlevel;          /* signal level */
 };
 
 typedef struct arc_record_contact_id * arc_record_contact_id_t;
@@ -192,11 +208,13 @@ typedef struct arc_record_contact_id * arc_record_contact_id_t;
 
 struct arc_record_media
 {
-  char        * received;       /* always utc */
-  char        * data;
-  char        * type;
-  char        * code;
-  size_t        size;
+  struct arc_record     record;
+  uint64_t              callsign;        /* account id */
+  char                * received;       /* always utc */
+  char                * data;
+  char                * type;
+  char                * code;
+  size_t                size;
 };
 
 typedef struct arc_record_media * arc_record_media_t;

@@ -199,8 +199,8 @@ printf( "channel: params allocated\n");
           /* set up channel */
           status = module->set_handle(
                      self->m_hd,
-                     conf->count,
-                     (char**) conf->list
+                     (char**) conf->list,
+                     conf->count
                    );
 
 printf( "channel: set handle returned %d\n", status);
@@ -328,21 +328,18 @@ channel_close( channel_t self )
 
 status_t
 channel_recv( channel_t       self,
-              arc_record_t *  record,
-              unsigned int *  count,
-              void         ** data)
+              arc_record_t ** p_list,
+              unsigned int *  p_size)
 {
   arc_status_t status;
   const char * ch_ptr;
 
-  status = self->module->read( self->m_hd, record, count, data );
+  status = self->module->read( self->m_hd, p_list, p_size);
 
   switch(status)
   {
     case ARC_STATUS_SUCCESS:
-      log_state(
-        "[%s] --> %u x %s", self->name, *count, u_arc_record_to_text(*record)
-      );
+      log_state( "[%s] --> %u records", self->name, *p_size);
       return STATUS_SUCCESS;
 
     case ARC_STATUS_IDLE:
@@ -371,13 +368,13 @@ channel_recv( channel_t       self,
 status_t
 channel_send( channel_t       self,
               arc_command_t   command,
-              unsigned int    count,
-              void          * data )
+              void          * data,
+              unsigned int    size)
 {
   arc_status_t   status;
   const char   * ch_ptr;
 
-  status = self->module->write(self->m_hd, command, count, data);
+  status = self->module->write(self->m_hd, command, data, size);
 
   switch (status)
   {

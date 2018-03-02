@@ -34,11 +34,11 @@ set ( SOURCE_FILES
   src/sql-queries.c
   src/commands-pool.c
   src/common-utils.c
-  src/store-heartbeat.c
-  src/store-contact-id.c
-  src/store-location.c
-  src/store-client.c
-  src/store-media.c
+#  src/store-heartbeat.c
+#  src/store-contact-id.c
+#  src/store-location.c
+#  src/store-client.c
+#  src/store-media.c
   src/store.c
 
 
@@ -52,6 +52,7 @@ set ( SOURCE_FILES
   cStuff/list.c
   cStuff/uri.c
   cStuff/query-stream.c
+  cStuff/base64.c
 )
 
 # definitions -----------------------------------------------------------------
@@ -85,7 +86,7 @@ add_definitions(
 # linking ---------------------------------------------------------------------
 
 find_package(PostgreSQL)
-#find_package(OpenSSL)
+find_package(OpenSSL)
 
 include_directories(
   "./"

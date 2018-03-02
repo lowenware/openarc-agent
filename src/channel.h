@@ -44,17 +44,16 @@ channel_close( channel_t self );
 
 status_t
 channel_recv( channel_t       self,
-              arc_record_t *  record,
-              unsigned int *  count,
-              void         ** data);
+              arc_record_t ** p_list,
+              unsigned int *  size);
 
 /* -------------------------------------------------------------------------- */
 
 status_t
 channel_send( channel_t       self,
               arc_command_t   command,
-              unsigned int    count,
-              void          * data );
+              void          * data,
+              unsigned int    size);
 
 /* -------------------------------------------------------------------------- */
 

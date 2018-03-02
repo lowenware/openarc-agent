@@ -358,9 +358,8 @@ static int
 touch_channel( channel_t channel )
 {
   int             result = MINIMAL_DELAY;
-  arc_record_t    record = ARC_RECORD_NULL;
   arc_command_t   command;
-  void          * data = NULL;
+  arc_record_t  * list = NULL;
   unsigned int    size = 0;
   status_t        status = STATUS_PENDING;
 
@@ -374,65 +373,29 @@ touch_channel( channel_t channel )
   }
 
   /* input */
-  if ((status = channel_recv(channel, &record, &size, &data))==STATUS_SUCCESS)
+  if ((status = channel_recv(channel, &list, &size))==STATUS_SUCCESS)
   {
-    switch(record)
+    if (size)
     {
-      case ARC_RECORD_CLIENT_CONNECTED:
-      case ARC_RECORD_CLIENT_DISCONNECTED:
-        status = store_client(channel, record, (arc_record_client_t)data, size);
-        break;
+      status = store_records(channel, list, size);
 
-      case ARC_RECORD_CONTACT_ID:
-        status = store_contact_id(channel, (arc_record_contact_id_t)data, size);
-        break;
-
-      case ARC_RECORD_HEARTBEAT:
-        status = store_heartbeat(channel, (arc_record_heartbeat_t)data, size);
-        break;
-
-      case ARC_RECORD_LOCATION:
-        status = store_location(channel, (arc_record_location_t)data, size);
-        break;
-
-      case ARC_RECORD_MEDIA:
-        status = store_media(channel, (arc_record_media_t)data, size);
-        break;
-
-      case ARC_RECORD_NULL:
-        break;
+      if (status != STATUS_SUCCESS)
+      {
+        channel->module->confirm( channel->m_hd, list, 0 );
+      }
     }
 
-    switch (status)
-    {
-      case STATUS_SUCCESS:
-        result = 0;
-        break;
-
-      case STATUS_PENDING:
-        break;
-
-      default: /* packet was not proceeded due to error */
-        log_alert(
-          "[%s] fail to proceeed record=%s, status=%s",
-          channel->name,
-          u_arc_record_to_text(record),
-          u_status_to_text(status)
-        );
-        /* _RESET command should never fail */
-        /*
-        channel_send( channel, ARC_COMMAND_RESET, size, data );
-        */
-        result *= 5;
-    }
+    result = 0;
   }
 
+  void * cmd_data = NULL;
+
   /* output */
-  if ( commands_pool_get(&command, channel, &size, &data) == STATUS_SUCCESS )
+  if ( commands_pool_get(&command, channel, &cmd_data, &size) == STATUS_SUCCESS )
   {
-    if ( channel_send( channel, command, size, data ) != STATUS_SUCCESS )
+    if ( channel_send( channel, command, cmd_data, size ) != STATUS_SUCCESS )
     {
-      commands_pool_reset( command, channel, data );
+      commands_pool_reset( command, channel, cmd_data );
     }
     result = 0;
   }

@@ -13,7 +13,7 @@ const char errNoSymInMod[]     = "no symbol '%s' in '%s' module",
            cSymFreeHandle[]    = ARC_TO_STRING( ARC_MODULE_FREE_HANDLE ),
            cSymSetHandle[]     = ARC_TO_STRING( ARC_MODULE_SET_HANDLE ),
            cSymGetError[]      = ARC_TO_STRING( ARC_MODULE_GET_ERROR ),
-           cSymConfirmRecord[] = ARC_TO_STRING( ARC_MODULE_CONFIRM_RECORD ),
+           cSymConfirm[]       = ARC_TO_STRING( ARC_MODULE_CONFIRM ),
            cSymOpen[]          = ARC_TO_STRING( ARC_MODULE_OPEN ),
            cSymClose[]         = ARC_TO_STRING( ARC_MODULE_CLOSE ),
            cSymRead[]          = ARC_TO_STRING( ARC_MODULE_READ ),
@@ -88,7 +88,7 @@ module_new( module_t * self, const char * name )
   if ( ! GET_FUNC((*self)->get_error, cSymGetError) )
     goto e_dlsym;
 
-  if ( ! GET_FUNC((*self)->confirm_record, cSymConfirmRecord) )
+  if ( ! GET_FUNC((*self)->confirm, cSymConfirm) )
     goto e_dlsym;
 
   if ( ! GET_FUNC((*self)->open, cSymOpen) )

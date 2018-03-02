@@ -26,8 +26,8 @@ typedef struct pool_item * pool_item_t;
 static pool_item_t
 pool_item_new( arc_command_t    command,
                channel_t        channel,
-               unsigned int           size,
-               void           * data )
+               void           * data,
+               unsigned int     size )
 {
   pool_item_t self;
 
@@ -72,12 +72,12 @@ commands_pool_release()
 status_t
 commands_pool_add( arc_command_t    command,
                    channel_t        channel,
-                   unsigned int     size,
-                   void           * data)
+                   void           * data,
+                   unsigned int     size )
 {
   pool_item_t item;
 
-  if ( (item = pool_item_new( command, channel, size, data )) != NULL )
+  if ( (item = pool_item_new( command, channel, data, size )) != NULL )
   {
     if (list_append(gPool, item) != -1)
       return STATUS_SUCCESS;
@@ -93,8 +93,8 @@ commands_pool_add( arc_command_t    command,
 status_t
 commands_pool_get( arc_command_t  * command,
                    channel_t        channel,
-                   unsigned int   * size,
-                   void          ** data)
+                   void          ** data,
+                   unsigned int   * size )
 {
   pool_item_t item;
   int i;

@@ -41,7 +41,7 @@ u_status_to_text( status_t status )
 /* -------------------------------------------------------------------------- */
 
 const char *
-u_arc_record_to_text( arc_record_t record )
+u_arc_record_to_text( arc_record_class_t record )
 {
 
   switch( record )

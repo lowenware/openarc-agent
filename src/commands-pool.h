@@ -20,16 +20,16 @@ commands_pool_release();
 status_t
 commands_pool_add( arc_command_t    command,
                    channel_t        channel,
-                   unsigned int     size,
-                   void           * data);
+                   void           * data,
+                   unsigned int     size);
 
 /* -------------------------------------------------------------------------- */
 
 status_t
 commands_pool_get( arc_command_t  * command,
                    channel_t        channel,
-                   unsigned int   * size,
-                   void          ** data);
+                   void          ** data,
+                   unsigned int   * size);
 
 /* -------------------------------------------------------------------------- */
 
