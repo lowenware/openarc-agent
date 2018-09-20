@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <locale.h>
 #include <cStuff/log.h>
 #include <cStuff/base64.h>
 #include <cStuff/str-utils.h>
@@ -64,7 +65,7 @@ store_on_sql_result( PGresult * res, int i_res, store_t store )
 
   store->channel->module->confirm( channel->m_hd, store->list, 1 );
 
-  log_state("[%s] %s stored %u records", channel->name, store->list_size);
+  log_state("[%s] stored %u records", channel->name, store->list_size);
 
   store_free(store);
 
@@ -200,7 +201,7 @@ static const char sqlLocation[] =
     ") "
     "SELECT "
       "$4," /* received_at */
-      "CONCAT($5, ' ', d.timezone)::TIMESTAMP WITH TIME ZONE," /* occured_at */
+      "CONCAT($5, ' ', tz.name)::TIMESTAMP WITH TIME ZONE," /* occured_at */
       "CASE WHEN p.event_id IS NULL THEN ("
         "SELECT e.id event_id "
         "FROM events e JOIN patterns p on p.event_id=e.id "
@@ -223,6 +224,7 @@ static const char sqlLocation[] =
     "FROM "
       "device_channels dc INNER JOIN "
       "devices d ON dc.device_id=d.id INNER JOIN "
+      "timezones tz ON d.timezone_id=tz.id INNER JOIN "
       "channels c ON dc.channel_id=c.id INNER JOIN "
       "agents a ON c.agent_id=a.id LEFT JOIN "
       "dictionaries dct ON dc.dictionary_id=dct.id LEFT JOIN "
@@ -342,7 +344,7 @@ get_location_sql( channel_t channel, arc_record_location_t   record)
     if (!position)
       goto finally;
 
-    ptr = str_printf( sqlSetFormat, "position", position );
+    ptr = str_printf( "position=%s,", position );
     if ( !ptr )
       goto finally;
 
@@ -417,7 +419,7 @@ get_location_sql( channel_t channel, arc_record_location_t   record)
              DBX_STRING, record->occured,
              DBX_STRING, gsm_level,
              DBX_STRING, bat_level,
-             DBX_STRING, position,
+             DBX_STATEMENT, position,
              DBX_STRING, altitude,
              DBX_STRING, speed,
              DBX_STRING, direction,
@@ -466,7 +468,7 @@ static const char sqlMedia[] =
       "devices d ON dc.device_id=d.id "
     "WHERE "
       "dc.channel_id=$1 AND "
-      "dc.callsign=$2 AND"
+      "dc.callsign=$2 AND "
       "d.enabled=TRUE "
     "RETURNING id"
   ")"
@@ -484,15 +486,15 @@ static const char sqlMedia[] =
       "message"
     ") "
     "SELECT "
-      "$4," /* received_at */
-      "$4," /* occured_at */
+      "$3," /* received_at */
+      "$3," /* occured_at */
       "p.event_id,"
       "1," /* source_type_id = 1 (agent)*/
       "a.id,"
       "a.name,"
       "$1,"
-      "im.device_id,"
-      "$2"
+      "dc.device_id,"
+      "$2,"
       "p.event_code,"
       "(SELECT id FROM insert_media)"
     "FROM "
@@ -500,8 +502,8 @@ static const char sqlMedia[] =
       "devices d ON dc.device_id=d.id INNER JOIN "
       "channels c ON dc.channel_id=c.id INNER JOIN "
       "agents a ON c.agent_id=a.id LEFT JOIN "
-      "dictionaries dct ON dc.dictionary_id=1 LEFT JOIN "
-      "patterns p ON p.dictionary_id=dct.id AND p.event_code='MEDIA' LEFT JOIN "
+      "dictionaries dct ON dc.dictionary_id=dct.id LEFT JOIN "
+      "patterns p ON p.dictionary_id=dct.id AND p.event_code='TALKBACK' LEFT JOIN "
       "events e ON p.event_id=e.id "
     "WHERE "
       "dc.callsign=$2 AND "  /* callsign */
@@ -523,7 +525,7 @@ get_media_sql( channel_t channel, arc_record_media_t   record)
   {
 
     result = dbx_sql_format(
-               sqlMedia, 12,
+               sqlMedia, 6,
                DBX_UINT32, channel->id,
                DBX_UINT64, record->callsign,
                DBX_STRING, record->received,
@@ -556,32 +558,42 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
   uint64_t dbx_id;
   unsigned int sqls_count = 2;
 
+printf("store %u records (%p)\n", size, list);
+
+  setlocale(LC_ALL, "C");
+
   for (unsigned int i=0; i<size; i++)
   {
     arc_record_t r = list[i];
 
+printf("store switch(%p)\n", r);
     switch (r->recordClass)
     {
       case ARC_RECORD_HEARTBEAT:
+printf("store ARC_RECORD_HEARTBEAT\n");
         recd_sql = get_heartbeat_sql(
                      channel, (arc_record_heartbeat_t) r
                    );
         sqls_count += HEARTBEAT_SQLS;
         break;
 
-      /*
       case ARC_RECORD_CLIENT_CONNECTED:
+      case ARC_RECORD_CLIENT_DISCONNECTED:
+      case ARC_RECORD_CONTACT_ID:
+printf("store %s\n",u_arc_record_to_text(r->recordClass));
+        continue;
+      /*
         recd_sql = get_client_connected_sql(
                      channel, (arc_record_client_t) r
                    );
         break;
 
-      case ARC_RECORD_CLIENT_DISCONNECTED:
+      */
+      /*
         recd_sql = get_client_disconnected_sql(
                      channel, (arc_record_client_t) r
                    );
         break;
-      case ARC_RECORD_CONTACT_ID:
         recd_sql = get_contact_id_sql(
                      channel, (arc_record_contact_id_t) r
                    );
@@ -589,6 +601,7 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
       */
 
       case ARC_RECORD_LOCATION:
+printf("store ARC_RECORD_LOCATION\n");
         recd_sql = get_location_sql(
                      channel, (arc_record_location_t) r
                    );
@@ -596,6 +609,7 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
         break;
 
       case ARC_RECORD_MEDIA:
+printf("store ARC_RECORD_MEDIA\n");
         recd_sql = get_media_sql(
                      channel, (arc_record_media_t) r
                    );
@@ -603,6 +617,7 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
         break;
 
       default:
+printf("store DEFAULT\n");
         log_alert(
           "[%s] unexpected record %d(%s)",
           channel->name,
@@ -617,12 +632,19 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
     if (!(sql = str_cat(list_sql, recd_sql)) )
       goto except;
 
+printf("store 1\n");
     list_sql = sql;
 
     free(recd_sql);
     recd_sql = NULL;
 
-    r++;
+  }
+
+  setlocale(LC_ALL, "");
+
+  if (!list_sql)
+  {
+    return STATUS_SUCCESS; /* unhandled */
   }
 
   if ( !(store = store_new(channel, list, size, sqls_count)) )

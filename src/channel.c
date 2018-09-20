@@ -339,7 +339,7 @@ channel_recv( channel_t       self,
   switch(status)
   {
     case ARC_STATUS_SUCCESS:
-      log_state( "[%s] --> %u records", self->name, *p_size);
+      log_state( "[%s] --> %u records, (%p)", self->name, *p_size, *p_list);
       return STATUS_SUCCESS;
 
     case ARC_STATUS_IDLE:
@@ -354,6 +354,7 @@ channel_recv( channel_t       self,
         ch_ptr = u_status_to_text( STATUS_EXTCALL_ERROR );
 
       log_alert( "[%s] channel recv() failed; error=%s", self->name, ch_ptr );
+      return STATUS_EXTCALL_ERROR;
 
     default:
       log_alert( cBadReply, self->name, status );
