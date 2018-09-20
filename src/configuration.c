@@ -78,7 +78,7 @@ CFG_STRING(  dbPassword,     "database.password",      ""           )
 CFG_STRING(  dbHostname,     "database.hostname",      "localhost"  )
 CFG_INTEGER( dbPort,         "database.port",          5432         )
 CFG_INTEGER( dbConnections,  "database.connections",   4            )
-  
+
 /* -------------------------------------------------------------------------- */
 
 static const char errCfgFailure[]="configuration failed (%s)\n",
@@ -270,7 +270,7 @@ on_get_node( int             line_number,
 
 /* -------------------------------------------------------------------------- */
 
-static bool
+static int
 on_get_pair( int              line_number,
              const char     * key,
              const char     * value,
@@ -321,16 +321,16 @@ on_get_pair( int              line_number,
 
   fprintf(stderr, errBadCfgUnit, "pair", key, line_number);
 
-  return false;
+  return 0;
 }
 
 /* -------------------------------------------------------------------------- */
 
-static bool
+static int
 on_syntax_error( int               line_number,
                  int               char_number,
                  const char      * line_text,
-                 config_status_t   status, 
+                 config_status_t   status,
                  void            * u_ptr )
 {
   fprintf( stderr, errCfgSyntax, line_number, line_text);
@@ -340,7 +340,7 @@ on_syntax_error( int               line_number,
   }
   fprintf(stderr, "^\n");
 
-  return false;
+  return 0;
 }
 /* -------------------------------------------------------------------------- */
 
@@ -363,4 +363,3 @@ configuration_load_from_file( const char * file )
 }
 
 /* -------------------------------------------------------------------------- */
-

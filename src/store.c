@@ -86,7 +86,7 @@ store_on_sql_error( const char * e_msg,
 
   channel->module->confirm( channel->m_hd, store->list, 0 );
 
-  log_error("[%s] not stored %u records (%s)", channel->name, 
+  log_error("[%s] not stored %u records (%s)", channel->name,
                                       store->list_size,
                                       e_msg);
   log_debug("[SQL] %s", sql);
@@ -137,7 +137,7 @@ get_heartbeat_sql( channel_t channel, arc_record_heartbeat_t record)
   char * gsm_level = NULL,
        * bat_level = NULL,
        * result    = NULL;
-  
+
   if (!(record->gsmLevel < 0 || record->gsmLevel > 100))
   {
     gsm_level = str_printf(
@@ -558,7 +558,7 @@ store_records( channel_t channel, arc_record_t * list, unsigned int size)
   uint64_t dbx_id;
   unsigned int sqls_count = 2;
 
-printf("store %u records (%p)\n", size, list);
+printf("store %u records (%p)\n", size, (void*)list);
 
   setlocale(LC_ALL, "C");
 
@@ -566,7 +566,7 @@ printf("store %u records (%p)\n", size, list);
   {
     arc_record_t r = list[i];
 
-printf("store switch(%p)\n", r);
+printf("store switch(%p)\n", (void*)r);
     switch (r->recordClass)
     {
       case ARC_RECORD_HEARTBEAT:
@@ -682,4 +682,3 @@ except:
 }
 
 /* -------------------------------------------------------------------------- */
-
