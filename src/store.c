@@ -197,7 +197,8 @@ static const char sqlLocation[] =
       "position,"
       "altitude,"
       "speed,"
-      "direction"
+      "direction,"
+      "message"
     ") "
     "SELECT "
       "$4," /* received_at */
@@ -220,7 +221,8 @@ static const char sqlLocation[] =
       "$8," /* latitude, longitude */
       "$9," /* altitude */
       "$10," /* speed */
-      "$11 "  /* direction */
+      "$11,"  /* direction */
+      "CASE WHEN p.event_id IS NULL THEN $3 ELSE NULL END "
     "FROM "
       "device_channels dc INNER JOIN "
       "devices d ON dc.device_id=d.id INNER JOIN "
